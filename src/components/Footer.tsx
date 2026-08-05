@@ -163,7 +163,7 @@ export default function Footer() {
                 />
                 <path
                   d="M 190.0 234.0 L 193.9 244.7 L 205.2 245.1 L 196.3 252.0 L 199.4 262.9 L 190.0 256.6 L 180.6 262.9 L 183.7 252.0 L 174.8 245.1 L 186.1 244.7 Z"
-                  fill="#E8551D"
+                  fill="hsl(var(--brand-accent))"
                 />
               </svg>
             </p>

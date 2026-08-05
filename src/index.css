@@ -4,34 +4,88 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 45 13% 7%;
-    --card: 40 33% 97%;
-    --card-foreground: 45 13% 7%;
-    --popover: 40 33% 97%;
-    --popover-foreground: 45 13% 7%;
-    --primary: 16 82% 51%;
-    --primary-foreground: 40 33% 97%;
-    --secondary: 40 17% 92%;
-    --secondary-foreground: 45 13% 7%;
-    --muted: 40 17% 92%;
-    --muted-foreground: 45 6% 40%;
-    --accent: 22 88% 93%;
-    --accent-foreground: 18 86% 40%;
+    /* ---- shadcn/ui tokens (light) ---- */
+    --background: 120 12% 97%;
+    --foreground: 144 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 144 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 144 10% 10%;
+    --primary: 159 68% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 135 13% 94%;
+    --secondary-foreground: 144 10% 10%;
+    --muted: 135 13% 94%;
+    --muted-foreground: 150 6% 40%;
+    --accent: 159 22% 91%;
+    --accent-foreground: 159 68% 24%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 40 14% 86%;
-    --input: 40 14% 86%;
-    --ring: 16 82% 51%;
+    --border: 140 11% 89%;
+    --input: 140 11% 89%;
+    --ring: 159 68% 24%;
     --radius: 0.625rem;
-    --sidebar-background: 40 33% 97%;
-    --sidebar-foreground: 45 13% 7%;
-    --sidebar-primary: 16 82% 51%;
-    --sidebar-primary-foreground: 40 33% 97%;
-    --sidebar-accent: 40 17% 92%;
-    --sidebar-accent-foreground: 45 13% 7%;
-    --sidebar-border: 40 14% 86%;
-    --sidebar-ring: 16 82% 51%;
+    --sidebar-background: 120 12% 97%;
+    --sidebar-foreground: 144 10% 10%;
+    --sidebar-primary: 159 68% 24%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 135 13% 94%;
+    --sidebar-accent-foreground: 144 10% 10%;
+    --sidebar-border: 140 11% 89%;
+    --sidebar-ring: 159 68% 24%;
+
+    /* ---- brand palette (light) — what the page components actually use ---- */
+    --paper: 120 12% 97%;
+    --paper-2: 135 13% 94%;
+    --ink: 144 10% 10%;
+    --ink-2: 150 6% 40%;
+    --stone: 150 6% 40%;
+    --line: 140 11% 89%;
+    --brand-accent: 159 68% 24%;
+    --brand-accent-hover: 159 69% 19%;
+    --brand-accent-soft: 159 22% 91%;
+  }
+
+  .dark {
+    /* ---- shadcn/ui tokens (dark) ---- */
+    --background: 165 11% 7%;
+    --foreground: 140 13% 95%;
+    --card: 160 10% 11%;
+    --card-foreground: 140 13% 95%;
+    --popover: 160 10% 11%;
+    --popover-foreground: 140 13% 95%;
+    --primary: 159 59% 44%;
+    --primary-foreground: 158 24% 7%;
+    --secondary: 157 10% 15%;
+    --secondary-foreground: 140 13% 95%;
+    --muted: 157 10% 15%;
+    --muted-foreground: 154 8% 65%;
+    --accent: 159 35% 18%;
+    --accent-foreground: 158 55% 51%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 153 9% 19%;
+    --input: 153 9% 19%;
+    --ring: 159 59% 44%;
+    --sidebar-background: 156 10% 10%;
+    --sidebar-foreground: 140 13% 95%;
+    --sidebar-primary: 159 59% 44%;
+    --sidebar-primary-foreground: 158 24% 7%;
+    --sidebar-accent: 157 10% 15%;
+    --sidebar-accent-foreground: 140 13% 95%;
+    --sidebar-border: 153 9% 19%;
+    --sidebar-ring: 159 59% 44%;
+
+    /* ---- brand palette (dark) ---- */
+    --paper: 165 11% 7%;
+    --paper-2: 157 10% 15%;
+    --ink: 140 13% 95%;
+    --ink-2: 154 8% 65%;
+    --stone: 154 8% 65%;
+    --line: 153 9% 19%;
+    --brand-accent: 159 59% 44%;
+    --brand-accent-hover: 158 55% 51%;
+    --brand-accent-soft: 159 35% 18%;
   }
 
   html {
@@ -44,12 +98,12 @@
   }
 
   ::selection {
-    background: #e8551d;
-    color: #faf8f4;
+    background: hsl(var(--brand-accent));
+    color: hsl(var(--paper));
   }
 
   :focus-visible {
-    outline: 2px solid #e8551d;
+    outline: 2px solid hsl(var(--brand-accent));
     outline-offset: 2px;
   }
 

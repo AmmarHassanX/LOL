@@ -153,11 +153,11 @@ function DeliveryCard({ order }: { order: OrderWithItems }) {
         <div className="relative mx-auto mt-5 h-44 w-32">
           <img src="/indiana-outline.svg" alt="Indiana route map" className="h-full w-full" />
           <svg viewBox="0 0 100 140" className="absolute inset-0 h-full w-full" aria-hidden>
-            <circle cx="50" cy="55" r="3" fill="#E8551D" />
+            <circle cx="50" cy="55" r="3" fill="hsl(var(--brand-accent))" />
             <motion.path
               d="M50 55 C 58 75, 42 95, 52 118"
               fill="none"
-              stroke="#E8551D"
+              stroke="hsl(var(--brand-accent))"
               strokeWidth="1.6"
               strokeDasharray="3 3"
               initial={{ pathLength: 0 }}

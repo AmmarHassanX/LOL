@@ -369,7 +369,7 @@ export default function Checkout() {
                       className={cn(
                         'rounded-xl border p-5 text-left transition-all duration-200 active:scale-[0.98]',
                         fulfillment === 'delivery'
-                          ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_#E8551D]'
+                          ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_hsl(var(--brand-accent))]'
                           : 'border-line bg-paper hover:border-stone',
                       )}
                     >
@@ -402,7 +402,7 @@ export default function Checkout() {
                       className={cn(
                         'rounded-xl border p-5 text-left transition-all duration-200 active:scale-[0.98]',
                         fulfillment === 'pickup'
-                          ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_#E8551D]'
+                          ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_hsl(var(--brand-accent))]'
                           : 'border-line bg-paper hover:border-stone',
                       )}
                     >
@@ -507,7 +507,7 @@ export default function Checkout() {
                               className={cn(
                                 'rounded-lg border px-4 py-2.5 text-center transition-all duration-150 active:scale-[0.96]',
                                 day === d.value
-                                  ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_#E8551D]'
+                                  ? 'border-amber bg-amber-soft/60 shadow-[0_0_0_1px_hsl(var(--brand-accent))]'
                                   : 'border-line hover:border-stone',
                               )}
                             >

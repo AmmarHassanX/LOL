@@ -178,20 +178,20 @@ export default function DeliveryNetwork() {
                   y1={HUB.y}
                   x2={dpos.x}
                   y2={dpos.y}
-                  stroke="#E8551D"
+                  stroke="hsl(var(--brand-accent))"
                   strokeWidth="2"
                   opacity="0.7"
                 />
               ))}
               {DOTS.map((dpos, i) => (
                 <g key={`d${i}`}>
-                  <circle className="dn-ripple" cx={dpos.x} cy={dpos.y} r="10" stroke="#E8551D" strokeWidth="2" />
-                  <circle className="dn-dot" cx={dpos.x} cy={dpos.y} r="8" fill="#E8551D" />
+                  <circle className="dn-ripple" cx={dpos.x} cy={dpos.y} r="10" stroke="hsl(var(--brand-accent))" strokeWidth="2" />
+                  <circle className="dn-dot" cx={dpos.x} cy={dpos.y} r="8" fill="hsl(var(--brand-accent))" />
                 </g>
               ))}
               <g className="dn-hub">
-                <circle cx={HUB.x} cy={HUB.y} r="14" stroke="#E8551D" strokeWidth="2" opacity="0.5" />
-                <circle cx={HUB.x} cy={HUB.y} r="9" fill="#E8551D" />
+                <circle cx={HUB.x} cy={HUB.y} r="14" stroke="hsl(var(--brand-accent))" strokeWidth="2" opacity="0.5" />
+                <circle cx={HUB.x} cy={HUB.y} r="9" fill="hsl(var(--brand-accent))" />
               </g>
             </svg>
             <p className="mt-4 flex items-center justify-center gap-2 text-center font-mono text-[10px] tracking-[0.18em] text-paper/50">

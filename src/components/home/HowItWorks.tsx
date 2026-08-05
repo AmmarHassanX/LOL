@@ -55,7 +55,7 @@ export default function HowItWorks() {
               y1="1"
               x2="100"
               y2="1"
-              stroke="#E8551D"
+              stroke="hsl(var(--brand-accent))"
               strokeWidth="2"
               strokeDasharray="6 6"
               vectorEffect="non-scaling-stroke"

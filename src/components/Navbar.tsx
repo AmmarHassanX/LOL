@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, LogOut, Menu, Package, Search, ShoppingCart, Truck, UserRound, X } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 import { useCartCount, useCartStore } from '@/store/cart';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -163,6 +164,8 @@ export default function Navbar() {
             >
               <Search className="h-[18px] w-[18px]" />
             </button>
+
+            <ThemeToggle />
 
             {/* AUTH-SLOT: wired to grafted useAuth() */}
             <AuthSlot />
