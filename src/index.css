@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 97%;
+    --foreground: 45 13% 7%;
+    --card: 40 33% 97%;
+    --card-foreground: 45 13% 7%;
+    --popover: 40 33% 97%;
+    --popover-foreground: 45 13% 7%;
+    --primary: 16 82% 51%;
+    --primary-foreground: 40 33% 97%;
+    --secondary: 40 17% 92%;
+    --secondary-foreground: 45 13% 7%;
+    --muted: 40 17% 92%;
+    --muted-foreground: 45 6% 40%;
+    --accent: 22 88% 93%;
+    --accent-foreground: 18 86% 40%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 40 14% 86%;
+    --input: 40 14% 86%;
+    --ring: 16 82% 51%;
+    --radius: 0.625rem;
+    --sidebar-background: 40 33% 97%;
+    --sidebar-foreground: 45 13% 7%;
+    --sidebar-primary: 16 82% 51%;
+    --sidebar-primary-foreground: 40 33% 97%;
+    --sidebar-accent: 40 17% 92%;
+    --sidebar-accent-foreground: 45 13% 7%;
+    --sidebar-border: 40 14% 86%;
+    --sidebar-ring: 16 82% 51%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #e8551d;
+    color: #faf8f4;
+  }
+
+  :focus-visible {
+    outline: 2px solid #e8551d;
+    outline-offset: 2px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  /* Lenis recommended styles */
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .marquee-track {
+    will-change: transform;
+  }
+  .marquee-paused:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
