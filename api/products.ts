@@ -3,6 +3,8 @@ import { z } from "zod";
 import { products, type Product } from "@db/schema";
 import { getDb } from "./queries/connection";
 import { createRouter, publicQuery } from "./middleware";
+import { buildSearchCondition, buildRelevanceExpr } from "./lib/search";
+import { tokenize } from "@contracts/search";
 
 /** Wholesale pricing is gated: guests receive priceCents as null. */
 export type PublicProduct = Omit<Product, "priceCents"> & {
@@ -43,10 +45,8 @@ function buildWhere(input: z.infer<typeof listInput>): SQL[] {
   if (input.category) conditions.push(eq(products.category, input.category));
   if (input.brand) conditions.push(eq(products.brand, input.brand));
   if (input.search) {
-    const term = `%${input.search}%`;
-    conditions.push(
-      sql`(${products.name} LIKE ${term} OR ${products.brand} LIKE ${term} OR ${products.description} LIKE ${term})`,
-    );
+    const searchCondition = buildSearchCondition(input.search);
+    if (searchCondition) conditions.push(searchCondition);
   }
   if (input.minPrice !== undefined)
     conditions.push(gte(products.priceCents, input.minPrice));
@@ -67,12 +67,20 @@ export const productsRouter = createRouter({
       const db = getDb();
       const where = and(...buildWhere(input));
 
+      // When searching, rank by relevance first — an exact name match
+      // should outrank a "newest" or alphabetical tiebreak. The person's
+      // chosen sort still applies as a secondary tiebreaker among equally
+      // relevant results (e.g. "cheapest of the good matches").
+      const orderBy = input.search
+        ? [desc(buildRelevanceExpr(input.search)), sortMap[input.sort]]
+        : [sortMap[input.sort]];
+
       const [rows, [{ total }]] = await Promise.all([
         db
           .select()
           .from(products)
           .where(where)
-          .orderBy(sortMap[input.sort])
+          .orderBy(...orderBy)
           .limit(input.limit)
           .offset(input.offset),
         db
@@ -87,6 +95,53 @@ export const productsRouter = createRouter({
         total: Number(total),
         limit: input.limit,
         offset: input.offset,
+      };
+    }),
+
+  /**
+   * Lightweight autocomplete for the navbar search dropdown. Deliberately
+   * separate from `list`: small, fixed result count, and returns matching
+   * brands/categories alongside products so the dropdown can offer
+   * "jump straight to this brand/category" shortcuts, not just products.
+   */
+  suggest: publicQuery
+    .input(z.object({ q: z.string().min(1).max(255) }))
+    .query(async ({ ctx, input }) => {
+      const words = tokenize(input.q);
+      if (words.length === 0) {
+        return { products: [], brands: [], categories: [] };
+      }
+
+      const db = getDb();
+      const searchCondition = buildSearchCondition(input.q);
+      const relevance = buildRelevanceExpr(input.q);
+
+      const rows = await db
+        .select()
+        .from(products)
+        .where(searchCondition)
+        .orderBy(desc(relevance))
+        .limit(8);
+
+      const authed = !!ctx.user;
+      const term = `%${input.q.trim()}%`;
+      const [brandRows, categoryRows] = await Promise.all([
+        db
+          .selectDistinct({ brand: products.brand })
+          .from(products)
+          .where(sql`${products.brand} LIKE ${term}`)
+          .limit(4),
+        db
+          .selectDistinct({ category: products.category })
+          .from(products)
+          .where(sql`${products.category} LIKE ${term}`)
+          .limit(4),
+      ]);
+
+      return {
+        products: rows.map((row) => gatePrice(row, authed)),
+        brands: brandRows.map((b) => b.brand),
+        categories: categoryRows.map((c) => c.category),
       };
     }),
 

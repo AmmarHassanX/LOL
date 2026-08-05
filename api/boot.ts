@@ -12,15 +12,19 @@ const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 
-// On Vercel, when backend env vars are not configured yet, fail API requests
-// per-request with a clean JSON 503 instead of crashing the serverless
-// function (or leaking a raw connection error).
-if (env.isVercel && !env.databaseUrl) {
+// When backend env vars are not configured yet, fail API requests
+// per-request with a clean JSON 503 instead of crashing/throwing deep
+// inside a procedure (or leaking a raw connection error). This applies
+// everywhere — not just Vercel — so local `npm run dev` behaves the same
+// documented way as production: page shells render, cart works client-
+// side, and API-backed data shows a clean error instead of a slow,
+// retried, uncaught exception.
+if (!env.databaseUrl) {
   app.use("/api/*", async (c) =>
     c.json(
       {
         error:
-          "Backend not configured — set DATABASE_URL / auth env vars in Vercel project settings",
+          "Backend not configured — set DATABASE_URL / auth env vars in your environment.",
       },
       503,
     ),

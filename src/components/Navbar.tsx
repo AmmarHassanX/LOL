@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, LogOut, Menu, Package, Search, ShoppingCart, Truck, UserRound, X } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import SearchOverlay from '@/components/SearchOverlay';
 import { useCartCount, useCartStore } from '@/store/cart';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -28,6 +29,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const count = useCartCount();
   const openDrawer = useCartStore((s) => s.openDrawer);
   const location = useLocation();
@@ -42,6 +44,18 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  // Cmd/Ctrl+K opens the global search overlay from anywhere in the app.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -159,10 +173,14 @@ export default function Navbar() {
 
             <button
               type="button"
-              aria-label="Search"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper-2"
+              aria-label="Search (Ctrl+K)"
+              onClick={() => setSearchOpen(true)}
+              className="group flex h-9 items-center gap-1.5 rounded-lg px-2 text-ink transition-colors hover:bg-paper-2"
             >
               <Search className="h-[18px] w-[18px]" />
+              <kbd className="hidden rounded border border-line bg-paper-2 px-1.5 py-0.5 font-mono text-[10px] text-stone group-hover:border-transparent lg:inline-block">
+                ⌘K
+              </kbd>
             </button>
 
             <ThemeToggle />
@@ -268,6 +286,8 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
