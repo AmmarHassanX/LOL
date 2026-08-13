@@ -60,6 +60,26 @@ function buildWhere(input: z.infer<typeof listInput>): SQL[] {
   return conditions;
 }
 
+/**
+ * Wraps a SalesAgent call so a network/API failure becomes a clean
+ * `{ data: fallback, source: "salesagent", error }` response instead of an
+ * unhandled tRPC error — the frontend can check `.error` to show a status
+ * message, and `.source` to know whether it's looking at real ERP data or
+ * not, without every call site repeating this try/catch.
+ */
+async function safeSalesAgentCall<T>(fallback: T, fn: () => Promise<T>) {
+  try {
+    const data = await fn();
+    return { data, source: "salesagent" as const, error: undefined as string | undefined };
+  } catch (err) {
+    return {
+      data: fallback,
+      source: "salesagent" as const,
+      error: err instanceof Error ? err.message : "Unknown SalesAgent error",
+    };
+  }
+}
+
 export const productsRouter = createRouter({
   /**
    * Real category menu pulled live from SalesAgent (GET /menu), as opposed
@@ -72,17 +92,92 @@ export const productsRouter = createRouter({
    * Test this once deployed, where that restriction doesn't apply.
    */
   salesAgentCategories: publicQuery.query(async () => {
-    try {
-      const categories = await salesAgent.getMenu();
-      return { categories, source: "salesagent" as const };
-    } catch (err) {
-      return {
-        categories: [],
-        source: "salesagent" as const,
-        error: err instanceof Error ? err.message : "Unknown SalesAgent error",
-      };
-    }
+    const result = await safeSalesAgentCall([] as salesAgent.SalesAgentMenuCategory[], () =>
+      salesAgent.getMenu(),
+    );
+    return { categories: result.data, source: result.source, error: result.error };
   }),
+
+  /** Products within a category, live from SalesAgent. */
+  salesAgentProductsByCategory: publicQuery
+    .input(
+      z.object({
+        categoryId: z.union([z.number(), z.string()]),
+        page: z.number().default(0),
+        size: z.number().max(100).default(20),
+        sort: z.string().default("id"),
+        sortDirection: z.enum(["asc", "desc"]).default("desc"),
+      }),
+    )
+    .query(async ({ input }) => {
+      const empty: salesAgent.SalesAgentProductPage = { content: [], totalElements: 0, totalPages: 0 };
+      return safeSalesAgentCall(empty, () =>
+        salesAgent.listProductsByCategory({
+          categoryIdList: input.categoryId,
+          page: input.page,
+          size: input.size,
+          sort: input.sort,
+          sortDirection: input.sortDirection,
+        }),
+      );
+    }),
+
+  /** Live SalesAgent search — separate from the local `suggest`/`list`
+   *  search built earlier, which ranks the LOCAL seed catalog. This one
+   *  asks SalesAgent to do its own matching server-side. */
+  salesAgentSearch: publicQuery
+    .input(z.object({ q: z.string().min(1).max(255) }))
+    .query(async ({ input }) => {
+      return safeSalesAgentCall([] as salesAgent.SalesAgentProduct[], () =>
+        salesAgent.searchProducts(input.q),
+      );
+    }),
+
+  /** Single product + related products, live from SalesAgent. */
+  salesAgentProduct: publicQuery
+    .input(z.object({ id: z.union([z.number(), z.string()]) }))
+    .query(async ({ input }) => {
+      const [product, related] = await Promise.all([
+        safeSalesAgentCall(null as salesAgent.SalesAgentProduct | null, () =>
+          salesAgent.getProduct(input.id),
+        ),
+        safeSalesAgentCall([] as salesAgent.SalesAgentProduct[], () =>
+          salesAgent.getRelatedProducts(input.id),
+        ),
+      ]);
+      return {
+        product: product.data,
+        related: related.data,
+        source: "salesagent" as const,
+        error: product.error ?? related.error,
+      };
+    }),
+
+  /** Brand list, live from SalesAgent. */
+  salesAgentBrands: publicQuery.query(async () => {
+    return safeSalesAgentCall([] as salesAgent.SalesAgentBrand[], () => salesAgent.listBrands());
+  }),
+
+  /** Deal tags ("Nick's Daily Deal" etc.) and the products under a given
+   *  tag — real ERP-driven merchandising groupings. */
+  salesAgentTags: publicQuery.query(async () => {
+    return safeSalesAgentCall([] as salesAgent.SalesAgentTag[], () => salesAgent.getTagList());
+  }),
+
+  salesAgentProductsByTag: publicQuery
+    .input(
+      z.object({
+        tagId: z.union([z.number(), z.string()]),
+        page: z.number().default(0),
+        size: z.number().max(50).default(10),
+      }),
+    )
+    .query(async ({ input }) => {
+      const empty: salesAgent.SalesAgentProductPage = { content: [], totalElements: 0, totalPages: 0 };
+      return safeSalesAgentCall(empty, () =>
+        salesAgent.getProductsByTag({ tagId: input.tagId, page: input.page, size: input.size }),
+      );
+    }),
 
   list: publicQuery
     .input(listInput.optional())
