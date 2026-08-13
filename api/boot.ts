@@ -12,30 +12,16 @@ const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 
-// When backend env vars are not configured yet, fail API requests
-// per-request with a clean JSON 503 instead of crashing/throwing deep
-// inside a procedure (or leaking a raw connection error). This applies
-// everywhere — not just Vercel — so local `npm run dev` behaves the same
-// documented way as production: page shells render, cart works client-
-// side, and API-backed data shows a clean error instead of a slow,
-// retried, uncaught exception.
-if (!env.databaseUrl) {
-  app.use("/api/*", async (c, next) => {
-    // SalesAgent-only procedures don't call getDb() at all — don't block
-    // them just because the (separate, optional) local database isn't
-    // configured. tRPC's single-call URLs include the procedure name
-    // (e.g. /api/trpc/products.salesAgentCategories), so this is a simple,
-    // safe string check rather than a deep change to request routing.
-    if (c.req.path.includes("salesAgent")) return next();
-    return c.json(
-      {
-        error:
-          "Backend not configured — set DATABASE_URL / auth env vars in your environment.",
-      },
-      503,
-    );
-  });
-}
+// NOTE: there used to be a blanket "no DATABASE_URL configured -> return a
+// raw JSON 503 for all /api/*" guard here. It caused a worse problem than
+// the one it solved: that raw JSON isn't shaped the way the tRPC client
+// expects, so instead of showing a clean error message, the frontend
+// failed with a confusing "Unable to transform response from server".
+// tRPC's own error handling (getDb() throwing inside a procedure) already
+// produces a properly-shaped, frontend-parseable error — it was just slow
+// by default. That's fixed at the source now: the QueryClient in
+// src/providers/trpc.tsx defaults every query/mutation to retry: false,
+// so failures surface in under a second instead of after 7-10s of retries.
 app.get(Paths.oauthCallback, createOAuthCallbackHandler());
 app.use("/api/trpc/*", async (c) => {
   return fetchRequestHandler({

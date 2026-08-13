@@ -7,7 +7,17 @@ import type { ReactNode } from "react";
 
 export const trpc = createTRPCReact<AppRouter>();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    // Fail fast everywhere by default. A missing/misconfigured backend
+    // shouldn't take 7-10 seconds of retries to show an error — and
+    // React Query's default retries actively worked against the graceful-
+    // failure design elsewhere in this app. Individual queries can still
+    // opt into retries if a specific one genuinely needs them.
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({

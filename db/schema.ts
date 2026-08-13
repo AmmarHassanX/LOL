@@ -20,6 +20,10 @@ export const users = pgTable("users", {
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 320 }),
+  /** Only set for accounts created via the standalone email/password login
+   *  added after the original Kimi-platform OAuth login was removed —
+   *  real wholesale customers have no reason to have a Kimi account. */
+  passwordHash: varchar("passwordHash", { length: 255 }),
   avatar: text("avatar"),
   role: varchar("role", { length: 10 }).$type<"user" | "admin">().default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

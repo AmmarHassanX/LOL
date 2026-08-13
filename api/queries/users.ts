@@ -13,6 +13,10 @@ export async function findUserByUnionId(unionId: string) {
   return rows.at(0);
 }
 
+/** Standalone accounts use their lowercased email as unionId — see
+ *  api/auth-router.ts for why. */
+export const findUserByEmail = findUserByUnionId;
+
 export async function upsertUser(data: InsertUser) {
   const values = { ...data };
   const updateSet: Partial<InsertUser> = {
