@@ -239,8 +239,46 @@ export interface SalesAgentCustomer {
   [key: string]: unknown;
 }
 
-export function getCustomer(token: string) {
-  return salesAgentFetch<SalesAgentCustomer>(`/ecommerce/customer`, {
+// ---------------------------------------------------------------------------
+// Orders / payment — discovered by inspecting the DIST BUNDLE of the
+// original site's vendor checkout package (@salesgenterp/ui-components is
+// public on npm — MIT licensed, safe to read), not from readable app
+// source. That package can't be reused directly here (see the note above),
+// but its compiled code reveals real endpoints it calls internally:
+//
+//   GET  /ecommerce/order/:orderId?storeIds=X          — order detail
+//   GET  /ecommerce/order/:orderId/export/csv?storeIds=X — invoice CSV
+//   POST /ecommerce/order/payment                       — collect payment
+//        on an order (body includes a payment profile / card token)
+//   GET  /store/paymentMode                              — available
+//        payment methods for the store
+//
+// What's NOT found, even after searching the whole bundle: the endpoint
+// that actually converts a cart into a new order in the first place. It's
+// possible that step happens as a side effect of the payment call, or it
+// uses a code path this search didn't catch. This is exactly the kind of
+// gap that shouldn't be guessed at — it involves real money and real
+// orders. The honest next step is asking SalesAgent's team directly for
+// order-creation API docs, not reverse-engineering further.
+// ---------------------------------------------------------------------------
+export interface SalesAgentOrder {
+  orderId: number;
+  orderDto?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export function getOrder(orderId: number | string, storeIds: string = DEFAULT_STORE_ID) {
+  return salesAgentFetch<SalesAgentOrder>(`/ecommerce/order/${orderId}?storeIds=${storeIds}`);
+}
+
+export interface SalesAgentPaymentMode {
+  id: number;
+  name: string;
+}
+
+export function getPaymentModes(token: string) {
+  return salesAgentFetch<SalesAgentPaymentMode[]>(`/store/paymentMode`, {
     headers: authHeaders(token),
   });
 }
+
