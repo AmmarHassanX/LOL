@@ -145,7 +145,7 @@ async function seed() {
   console.log(`Inserted ${rows.length} products across ${new Set(rows.map((r) => r.category)).size} categories and ${new Set(rows.map((r) => r.brand)).size} brands.`);
 
   console.log("Done.");
-  process.exit(0); // close MySQL connection pool
+  process.exit(0);
 }
 
 seed();
