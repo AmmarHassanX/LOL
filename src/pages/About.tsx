@@ -68,9 +68,10 @@ function AboutHero() {
           transition={{ duration: 0.7, delay: 0.35, ease: EASE_OUT }}
           className="mx-auto mt-6 max-w-[720px] text-base leading-[1.6] text-stone md:text-lg"
         >
-          For ten years, MB Wholesale has helped Indiana&rsquo;s stores, gas stations, and restaurants
-          keep their shelves stocked and their margins healthy — with quality service, quality
-          products, and quality prices.
+          MB Wholesale is a one-stop wholesale center supplying most of the needs for gas
+          stations and smoke shops — vaping and smoking devices, accessories, premium juices,
+          candy, snacks, drinks, energy supplements, apparel, and general merchandise, with
+          quality service, quality products, and quality prices.
         </motion.p>
       </div>
 
@@ -128,7 +129,7 @@ function Story() {
           {[
             'MB Wholesale started the way a lot of Indiana businesses do — around a family kitchen table, with a box truck, a leased warehouse bay on the west side of Indianapolis, and a phone that never stopped ringing. We loaded pallets by hand, learned every back road in Marion County, and earned our first customers one delivery at a time.',
             'We grew the same way we started: word of mouth. Convenience-store owners told gas-station operators, who told restaurant managers, who told the market down the street. No gimmicks — just fair wholesale prices, routes that showed up when we said they would, and a family that answered its own phone.',
-            'Today, MB Wholesale carries 2,000+ products across 8 departments — vapes, tobacco & cigarillos, snacks & candy, beverages, gas station supplies, restaurant supplies, health & beauty, and Gemrock apparel. Our trucks run routes to every corner of Indiana, and our cash & carry warehouse at 4414 W 30th St is open six days a week for walk-ins.',
+            'Today, MB Wholesale carries 2,000+ products across departments including vape & disposable, e-liquid, smoking accessories, rolling papers, lighters & butane, drinks, toy & candy, general merchandise, energy supplements & personal care, household supplies, automotive, restaurant supply, and clothing. Our trucks run routes to every corner of Indiana, and our cash & carry warehouse at 4935 W 38th St is open six days a week for walk-ins.',
           ].map((paragraph, i) => (
             <motion.p
               key={i}

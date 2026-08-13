@@ -1,17 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
-import { WAREHOUSE } from '@/data/catalog';
+import { WAREHOUSE, CATEGORIES } from '@/data/catalog';
 import { LOGIN_PATH } from '@/const';
 
 const SHOP_LINKS = [
   { label: 'All Products', to: '/products' },
-  { label: 'Vapes', to: '/products?category=vapes' },
-  { label: 'Tobacco & Cigarillos', to: '/products?category=tobacco-cigarillos' },
-  { label: 'Snacks & Candy', to: '/products?category=snacks-candy' },
-  { label: 'Beverages', to: '/products?category=beverages' },
-  { label: 'Gas Station Supplies', to: '/products?category=gas-station-supplies' },
-  { label: 'Restaurant Supplies', to: '/products?category=restaurant-supplies' },
-  { label: 'Gemrock Apparel', to: '/products?category=gemrock-apparel' },
+  ...CATEGORIES.map((c) => ({ label: c.name, to: `/products?category=${c.slug}` })),
 ];
 
 const COMPANY_LINKS = [

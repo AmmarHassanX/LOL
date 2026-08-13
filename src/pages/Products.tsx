@@ -237,7 +237,7 @@ export default function Products() {
             </h1>
             <p className="mt-3 font-mono text-xs tracking-wide text-stone">
               {(meta ? meta.categories.reduce((n, c) => n + c.count, 0) : total).toLocaleString()}{' '}
-              PRODUCTS · {meta?.categories.length ?? 8} DEPARTMENTS · STATEWIDE DELIVERY
+              PRODUCTS · {meta?.categories.length ?? 13} DEPARTMENTS · STATEWIDE DELIVERY
             </p>
           </motion.div>
 

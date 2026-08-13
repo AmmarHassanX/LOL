@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 
 /**
  * Operating hours — single source of truth for About + Contact pages.
- * Mon–Fri 8:00 AM–6:00 PM · Sat 9:00 AM–4:00 PM · Sun closed
- * (America/Indiana/Indianapolis).
+ * Mon–Sat 9:30 AM–8:00 PM · Sun 10:30 AM–6:00 PM (America/Indiana/Indianapolis).
+ * Verified against mbwholesalellc.com's own listed store hours.
  */
 export const HOURS_ROWS: Array<[string, string]> = [
-  ['MON – FRI', '8:00 AM – 6:00 PM'],
-  ['SATURDAY', '9:00 AM – 4:00 PM'],
-  ['SUNDAY', 'CLOSED'],
+  ['MON – SAT', '9:30 AM – 8:00 PM'],
+  ['SUNDAY', '10:30 AM – 6:00 PM'],
 ];
 
 export const WILL_CALL_ROW: [string, string] = ['WILL-CALL / CASH & CARRY', 'MON–SAT DURING HOURS'];
@@ -18,13 +17,13 @@ const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
 
 /** Minutes-from-midnight [open, close) windows indexed by JS weekday (0 = Sunday). */
 const WINDOWS: Array<[number, number] | null> = [
-  null, // Sunday — closed
-  [8 * 60, 18 * 60],
-  [8 * 60, 18 * 60],
-  [8 * 60, 18 * 60],
-  [8 * 60, 18 * 60],
-  [8 * 60, 18 * 60],
-  [9 * 60, 16 * 60], // Saturday
+  [10 * 60 + 30, 18 * 60], // Sunday 10:30 AM – 6:00 PM
+  [9 * 60 + 30, 20 * 60], // Monday 9:30 AM – 8:00 PM
+  [9 * 60 + 30, 20 * 60],
+  [9 * 60 + 30, 20 * 60],
+  [9 * 60 + 30, 20 * 60],
+  [9 * 60 + 30, 20 * 60],
+  [9 * 60 + 30, 20 * 60], // Saturday
 ];
 
 export interface OpenStatus {

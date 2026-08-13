@@ -156,7 +156,7 @@ export default function Checkout() {
       noteParts.push(`Delivery day: ${day}. Window: ${window_}.`);
       noteParts.push(`Contact: ${contactName} · ${phone || 'no phone'} · ${email}`);
     } else {
-      noteParts.push(`CASH & CARRY PICKUP at 4414 W 30th St, Indianapolis. Contact: ${contactName} · ${phone || 'no phone'} · ${email}`);
+      noteParts.push(`CASH & CARRY PICKUP at 4935 W 38th St, Indianapolis. Contact: ${contactName} · ${phone || 'no phone'} · ${email}`);
     }
     if (notes.trim()) noteParts.push(notes.trim());
 
@@ -172,7 +172,7 @@ export default function Checkout() {
             }
           : {
               businessName: businessName.trim(),
-              street: '4414 W 30th St',
+              street: '4935 W 38th St',
               city: 'Indianapolis',
               zip: '46222',
             },
@@ -303,7 +303,7 @@ export default function Checkout() {
                         className={inputClass}
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="(317) 555-0142"
+                        placeholder="(317) 803-9060"
                         autoComplete="tel"
                       />
                     </div>
@@ -423,7 +423,7 @@ export default function Checkout() {
                         CASH & CARRY PICKUP
                       </p>
                       <p className="mt-1.5 font-mono text-[10px] tracking-[0.12em] text-stone">
-                        4414 W 30TH ST, INDIANAPOLIS
+                        4935 W 38TH ST, INDIANAPOLIS
                       </p>
                     </button>
                   </div>
@@ -609,7 +609,7 @@ export default function Checkout() {
                         <>
                           <p className="mt-2 text-sm font-semibold text-ink">Cash & Carry</p>
                           <p className="mt-0.5 font-mono text-xs text-stone">
-                            4414 W 30TH ST, INDIANAPOLIS, IN 46222
+                            4935 W 38TH ST, INDIANAPOLIS, IN 46254
                           </p>
                         </>
                       )}

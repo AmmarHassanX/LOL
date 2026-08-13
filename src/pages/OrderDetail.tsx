@@ -244,9 +244,9 @@ function InvoiceSummary({ order }: { order: OrderWithItems }) {
           <div>
             <p className="text-lg font-bold tracking-tight text-ink">MB WHOLESALE LLC</p>
             <p className="mt-1 text-[11px] text-stone">
-              4414 W 30TH ST, INDIANAPOLIS, IN 46222
+              4935 W 38TH ST, INDIANAPOLIS, IN 46254
               <br />
-              (317) 555-0142 · SALES@MBWHOLESALE.COM
+              (317) 803-9060 · SALES@MBWHOLESALELLC.COM
             </p>
           </div>
           <div className="text-right">

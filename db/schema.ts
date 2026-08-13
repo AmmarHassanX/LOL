@@ -30,15 +30,23 @@ export type InsertUser = typeof users.$inferInsert;
 
 // ── Catalog ──────────────────────────────────────────────────────────────────
 
+// Matches the real category menu on mbwholesalellc.com (see src/data/catalog.ts
+// for the source note). Keep this list and catalog.ts's CATEGORIES in sync —
+// they were previously two independent, drifting lists.
 export const PRODUCT_CATEGORIES = [
-  "Vapes",
-  "Tobacco & Cigarillos",
-  "Snacks & Candy",
-  "Beverages",
-  "Gas Station Supplies",
-  "Restaurant Supplies",
-  "Health & Beauty",
-  "Gemrock Apparel",
+  "Vape & Disposable",
+  "E-Liquid",
+  "Smoking Accessories",
+  "Rolling Papers",
+  "Lighters & Butane",
+  "Drinks",
+  "Toy & Candy",
+  "General Merchandise",
+  "Energy Supplement & Personal Care",
+  "Household Supplies",
+  "Automotive",
+  "Restaurant Supply",
+  "Clothing",
 ] as const;
 
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];

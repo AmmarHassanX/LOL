@@ -27,4 +27,18 @@ export const env = {
   kimiAuthUrl: required("KIMI_AUTH_URL"),
   kimiOpenUrl: required("KIMI_OPEN_URL"),
   ownerUnionId: process.env.OWNER_UNION_ID ?? "",
+
+  // SalesAgent ERP (mbwholesale.salesgenterp.com) — optional, not required().
+  // Unlike DATABASE_URL this doesn't throw if missing: the catalog falls
+  // back to the local DB seed data per-request instead of crashing the
+  // whole app. Defaults match what the original Next.js site used in
+  // production — confirm these are still correct for this account.
+  salesAgentApiBaseUrl:
+    process.env.SALESAGENT_API_BASE_URL ?? "https://mbwholesale.salesgenterp.com/api",
+  // businessTypeId=1 and storeId=2 were the fallback defaults used
+  // throughout the original codebase (sessionStorage/localStorage lookups
+  // with these as the `|| ` fallback) — inferred from that, not confirmed
+  // against a live SalesAgent account.
+  salesAgentBusinessTypeId: process.env.SALESAGENT_BUSINESS_TYPE_ID ?? "1",
+  salesAgentStoreId: process.env.SALESAGENT_STORE_ID ?? "2",
 };

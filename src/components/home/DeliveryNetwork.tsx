@@ -196,7 +196,7 @@ export default function DeliveryNetwork() {
             </svg>
             <p className="mt-4 flex items-center justify-center gap-2 text-center font-mono text-[10px] tracking-[0.18em] text-paper/50">
               <MapPin className="h-3.5 w-3.5 text-amber" />
-              HQ — 4414 W 30TH ST, INDIANAPOLIS
+              HQ — 4935 W 38TH ST, INDIANAPOLIS
             </p>
           </div>
         </div>

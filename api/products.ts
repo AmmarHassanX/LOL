@@ -5,6 +5,7 @@ import { getDb } from "./queries/connection";
 import { createRouter, publicQuery } from "./middleware";
 import { buildSearchCondition, buildRelevanceExpr } from "./lib/search";
 import { tokenize } from "@contracts/search";
+import * as salesAgent from "./lib/salesagent";
 
 /** Wholesale pricing is gated: guests receive priceCents as null. */
 export type PublicProduct = Omit<Product, "priceCents"> & {
@@ -60,6 +61,29 @@ function buildWhere(input: z.infer<typeof listInput>): SQL[] {
 }
 
 export const productsRouter = createRouter({
+  /**
+   * Real category menu pulled live from SalesAgent (GET /menu), as opposed
+   * to the local seed data's category list. This is the first concrete,
+   * working piece of the ERP integration — everything else it needs
+   * (auth headers, base URL, error handling) lives in ./lib/salesagent.ts.
+   *
+   * NOT yet verified against the live API — this sandbox can't reach
+   * mbwholesale.salesgenterp.com (confirmed via a direct network test).
+   * Test this once deployed, where that restriction doesn't apply.
+   */
+  salesAgentCategories: publicQuery.query(async () => {
+    try {
+      const categories = await salesAgent.getMenu();
+      return { categories, source: "salesagent" as const };
+    } catch (err) {
+      return {
+        categories: [],
+        source: "salesagent" as const,
+        error: err instanceof Error ? err.message : "Unknown SalesAgent error",
+      };
+    }
+  }),
+
   list: publicQuery
     .input(listInput.optional())
     .query(async ({ ctx, input: rawInput }) => {

@@ -105,7 +105,7 @@ export default function ContactForm() {
     },
     onError: () => {
       toast.error('Message could not be sent', {
-        description: 'Please try again, or call us at (317) 555-0142.',
+        description: 'Please try again, or call us at (317) 803-9060.',
       });
     },
   });
@@ -177,8 +177,8 @@ export default function ContactForm() {
             </h3>
             <p className="mt-2 max-w-[420px] text-[15px] leading-[1.6] text-stone">
               We&rsquo;ll reply within one business day. For anything urgent, call us at{' '}
-              <a href="tel:(317) 555-0142" className="font-medium text-ink hover:text-amber-deep">
-                (317) 555-0142
+              <a href="tel:(317) 803-9060" className="font-medium text-ink hover:text-amber-deep">
+                (317) 803-9060
               </a>
               .
             </p>

@@ -15,8 +15,7 @@ import { WAREHOUSE } from '@/data/catalog';
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-const DIRECTIONS_URL =
-  'https://www.google.com/maps/search/?api=1&query=4414+W+30th+St,+Indianapolis,+IN+46222';
+const DIRECTIONS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(WAREHOUSE.address)}`;
 
 /* ----------------------------------- hero ---------------------------------- */
 
