@@ -12,6 +12,7 @@ import Account from '@/pages/Account';
 import AccountOrders from '@/pages/AccountOrders';
 import OrderDetail from '@/pages/OrderDetail';
 import AdminApplications from '@/pages/AdminApplications';
+import AdminSalesAgentStatus from '@/pages/AdminSalesAgentStatus';
 import NotFound from '@/pages/NotFound';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="account/orders" element={<AccountOrders />} />
         <Route path="account/orders/:id" element={<OrderDetail />} />
         <Route path="admin/applications" element={<AdminApplications />} />
+        <Route path="admin/salesagent-status" element={<AdminSalesAgentStatus />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
