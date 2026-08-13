@@ -26,7 +26,7 @@ export const contactRouter = createRouter({
         topic: input.topic,
         message: input.message,
       })
-      .$returningId();
+      .returning({ id: contactMessages.id });
     return { success: true, id };
   }),
 });

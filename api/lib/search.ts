@@ -6,13 +6,16 @@ import { tokenize } from "@contracts/search";
  * Shared search logic for the product catalog.
  *
  * Design goals (per "make search smart and powerful"):
+ *  0. Uses Postgres's ILIKE (case-insensitive LIKE) — plain LIKE is
+ *     case-sensitive in Postgres, unlike MySQL's default collation, so
+ *     this is required to keep matching behavior the same as before.
  *  1. Multi-word queries shouldn't require exact substring order — a search
  *     for "red bull energy" should match a product named
  *     "Energy Drink – Red Bull", not just literal "red bull energy".
  *  2. Results should be RANKED by relevance, not just filtered. An exact
  *     name match should outrank a description-only mention.
  *  3. Partial words are naturally somewhat typo/incompleteness tolerant
- *     since every clause is a LIKE '%word%' — "vap" still matches "vape"/
+ *     since every clause is a ILIKE '%word%' — "vap" still matches "vape"/
  *     "vapes". True fuzzy (edit-distance) matching is a further step; see
  *     note in README below this file's tests.
  *
@@ -44,7 +47,7 @@ export function buildSearchCondition(rawQuery: string): SQL | undefined {
   const perWordClauses = words.map((word) => {
     const term = `%${word}%`;
     const columnMatches = SEARCHABLE_COLUMNS.map(
-      (col) => sql`${col} LIKE ${term}`,
+      (col) => sql`${col} ILIKE ${term}`,
     );
     return sql`(${sql.join(columnMatches, sql` OR `)})`;
   });
@@ -73,15 +76,15 @@ export function buildRelevanceExpr(rawQuery: string): SQL<number> {
 
   const fullTerm = `%${trimmed}%`;
   const nameWordBonuses = words.map(
-    (w) => sql`(CASE WHEN ${products.name} LIKE ${`%${w}%`} THEN 6 ELSE 0 END)`,
+    (w) => sql`(CASE WHEN ${products.name} ILIKE ${`%${w}%`} THEN 6 ELSE 0 END)`,
   );
 
   return sql<number>`(
     (CASE WHEN LOWER(${products.name}) = LOWER(${trimmed}) THEN 100 ELSE 0 END) +
-    (CASE WHEN ${products.name} LIKE ${`${trimmed}%`} THEN 60 ELSE 0 END) +
-    (CASE WHEN ${products.name} LIKE ${fullTerm} THEN 40 ELSE 0 END) +
-    (CASE WHEN ${products.brand} LIKE ${fullTerm} THEN 25 ELSE 0 END) +
-    (CASE WHEN ${products.category} LIKE ${fullTerm} OR ${products.subcategory} LIKE ${fullTerm} THEN 12 ELSE 0 END) +
+    (CASE WHEN ${products.name} ILIKE ${`${trimmed}%`} THEN 60 ELSE 0 END) +
+    (CASE WHEN ${products.name} ILIKE ${fullTerm} THEN 40 ELSE 0 END) +
+    (CASE WHEN ${products.brand} ILIKE ${fullTerm} THEN 25 ELSE 0 END) +
+    (CASE WHEN ${products.category} ILIKE ${fullTerm} OR ${products.subcategory} ILIKE ${fullTerm} THEN 12 ELSE 0 END) +
     (${sql.join(nameWordBonuses, sql` + `)})
   )`;
 }

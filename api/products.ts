@@ -55,7 +55,9 @@ function buildWhere(input: z.infer<typeof listInput>): SQL[] {
     conditions.push(lte(products.priceCents, input.maxPrice));
   if (input.inStockOnly) conditions.push(ne(products.stockStatus, "out"));
   if (input.tag) {
-    conditions.push(sql`JSON_CONTAINS(${products.tags}, ${JSON.stringify(input.tag)})`);
+    // Postgres jsonb containment: does the tags array contain this element?
+    // (MySQL used JSON_CONTAINS — this is the Postgres equivalent.)
+    conditions.push(sql`${products.tags} @> ${JSON.stringify([input.tag])}::jsonb`);
   }
   return conditions;
 }

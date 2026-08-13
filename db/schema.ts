@@ -1,22 +1,27 @@
 import {
-  mysqlTable,
-  mysqlEnum,
+  pgTable,
   serial,
   bigint,
-  int,
-  json,
+  integer,
+  jsonb,
   varchar,
   text,
   timestamp,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const users = mysqlTable("users", {
+// NOTE: converted from MySQL to Postgres (see PROJECT NOTES / conversation
+// for why: PlanetScale, the MySQL option, dropped its free tier and starts
+// at $39/mo; Neon's free Postgres tier plugs into Vercel with one click).
+// Postgres has no UNSIGNED integers (a MySQL-only concept) — the `unsigned`
+// option is simply dropped below, not replaced with anything.
+
+export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 320 }),
   avatar: text("avatar"),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: varchar("role", { length: 10 }).$type<"user" | "admin">().default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
@@ -61,7 +66,7 @@ export type ProductSpecs = {
   unitCount?: number;
 };
 
-export const products = mysqlTable("products", {
+export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -69,16 +74,16 @@ export const products = mysqlTable("products", {
   category: varchar("category", { length: 100 }).notNull(),
   subcategory: varchar("subcategory", { length: 100 }),
   description: text("description"),
-  specs: json("specs").$type<ProductSpecs>(),
+  specs: jsonb("specs").$type<ProductSpecs>(),
   /** Wholesale price per case, in cents. Gated behind auth at the API layer. */
-  priceCents: int("priceCents").notNull(),
+  priceCents: integer("priceCents").notNull(),
   unitLabel: varchar("unitLabel", { length: 100 }),
   stockStatus: varchar("stockStatus", { length: 10 })
     .$type<StockStatus>()
     .notNull()
     .default("in"),
   image: varchar("image", { length: 512 }),
-  tags: json("tags").$type<ProductTag[]>(),
+  tags: jsonb("tags").$type<ProductTag[]>(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -102,18 +107,18 @@ export type DeliveryAddress = {
   zip: string;
 };
 
-export const orders = mysqlTable("orders", {
+export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNo: varchar("orderNo", { length: 32 }).notNull().unique(),
-  userId: bigint("user_id", { mode: "number", unsigned: true }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
   status: varchar("status", { length: 20 })
     .$type<OrderStatus>()
     .notNull()
     .default("placed"),
-  subtotalCents: int("subtotalCents").notNull(),
-  deliveryFeeCents: int("deliveryFeeCents").notNull().default(0),
-  totalCents: int("totalCents").notNull(),
-  deliveryAddress: json("deliveryAddress").$type<DeliveryAddress>().notNull(),
+  subtotalCents: integer("subtotalCents").notNull(),
+  deliveryFeeCents: integer("deliveryFeeCents").notNull().default(0),
+  totalCents: integer("totalCents").notNull(),
+  deliveryAddress: jsonb("deliveryAddress").$type<DeliveryAddress>().notNull(),
   placedAt: timestamp("placedAt").defaultNow().notNull(),
   eta: varchar("eta", { length: 100 }),
   notes: text("notes"),
@@ -122,14 +127,14 @@ export const orders = mysqlTable("orders", {
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
 
-export const orderItems = mysqlTable("order_items", {
+export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
-  orderId: bigint("order_id", { mode: "number", unsigned: true }).notNull(),
-  productId: bigint("product_id", { mode: "number", unsigned: true }).notNull(),
+  orderId: bigint("order_id", { mode: "number" }).notNull(),
+  productId: bigint("product_id", { mode: "number" }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   brand: varchar("brand", { length: 255 }).notNull(),
-  qty: int("qty").notNull(),
-  priceCents: int("priceCents").notNull(),
+  qty: integer("qty").notNull(),
+  priceCents: integer("priceCents").notNull(),
 });
 
 export type OrderItem = typeof orderItems.$inferSelect;
@@ -145,9 +150,9 @@ export type BusinessType =
   | "market"
   | "other";
 
-export const businessProfiles = mysqlTable("business_profiles", {
+export const businessProfiles = pgTable("business_profiles", {
   id: serial("id").primaryKey(),
-  userId: bigint("user_id", { mode: "number", unsigned: true })
+  userId: bigint("user_id", { mode: "number" })
     .notNull()
     .unique(),
   businessName: varchar("businessName", { length: 255 }).notNull(),
@@ -172,7 +177,7 @@ export type InsertBusinessProfile = typeof businessProfiles.$inferInsert;
 
 export type ContactTopic = "general" | "sales" | "salesman" | "support";
 
-export const contactMessages = mysqlTable("contact_messages", {
+export const contactMessages = pgTable("contact_messages", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),

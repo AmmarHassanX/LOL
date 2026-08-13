@@ -54,7 +54,8 @@ export const profileRouter = createRouter({
     await db
       .insert(businessProfiles)
       .values(values)
-      .onDuplicateKeyUpdate({
+      .onConflictDoUpdate({
+        target: businessProfiles.userId,
         set: {
           businessName: values.businessName,
           contactName: values.contactName,

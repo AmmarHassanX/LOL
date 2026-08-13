@@ -116,7 +116,7 @@ export const ordersRouter = createRouter({
           eta: formatEta(placedAt),
           notes: input.notes ?? null,
         })
-        .$returningId();
+        .returning({ id: orders.id });
 
       await tx.insert(orderItems).values(
         input.items.map((item) => {
