@@ -31,6 +31,11 @@ export async function upsertUser(data: InsertUser) {
   ) {
     values.role = "admin";
     updateSet.role = "admin";
+    // An owner account promoted to admin can't sensibly be left "pending"
+    // — there's no other admin yet to approve them, so they'd be locked
+    // out of their own site. Auto-approve alongside the role promotion.
+    values.accountStatus = "approved";
+    updateSet.accountStatus = "approved";
   }
 
   await getDb()
