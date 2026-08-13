@@ -106,11 +106,13 @@ export default function Checkout() {
     if (profileQuery.isLoading) return;
     const profile = profileQuery.data;
     prefilled.current = true;
-    setContactName(profile?.contactName ?? user?.name ?? '');
+    setContactName(
+      profile ? `${profile.firstName} ${profile.lastName}`.trim() : (user?.name ?? ''),
+    );
     setPhone(profile?.phone ?? '');
     setEmail(user?.email ?? '');
-    setBusinessName(profile?.businessName ?? '');
-    setStreet(profile?.street ?? '');
+    setBusinessName(profile?.company ?? '');
+    setStreet(profile?.address1 ?? '');
     setCity(profile?.city ?? '');
     setZip(profile?.zip ?? '');
   }, [isAuthenticated, profileQuery.isLoading, profileQuery.data, user]);

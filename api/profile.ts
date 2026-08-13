@@ -13,18 +13,25 @@ const businessTypeEnum = z.enum([
   "other",
 ]);
 
+/** For editing an already-approved account's profile. The full compliance
+ *  application (with the tax/license fields) lives in auth-router.ts's
+ *  `register` — this covers the fields someone might reasonably update
+ *  later (moved locations, new phone, etc.), not the whole application. */
 const upsertInput = z.object({
-  businessName: z.string().min(1).max(255),
-  contactName: z.string().max(255).optional(),
-  phone: z.string().max(40).optional(),
+  company: z.string().min(1).max(255),
+  firstName: z.string().min(1).max(255),
+  lastName: z.string().min(1).max(255),
+  phone: z.string().max(40),
   businessType: businessTypeEnum.optional(),
-  street: z.string().max(255).optional(),
-  city: z.string().max(100).optional(),
+  address1: z.string().max(255),
+  city: z.string().max(100),
+  state: z.string().max(2),
   zip: z
     .string()
-    .regex(/^\d{5}$/, "ZIP must be 5 digits")
-    .optional(),
-  taxId: z.string().max(64).optional(),
+    .regex(/^\d{5}$/, "ZIP must be 5 digits"),
+  taxId: z.string().max(64),
+  feinNumber: z.string().max(64),
+  tobaccoId: z.string().max(64),
 });
 
 export const profileRouter = createRouter({
@@ -39,34 +46,14 @@ export const profileRouter = createRouter({
     const db = getDb();
     const userId = ctx.user.id;
 
-    const values = {
-      userId,
-      businessName: input.businessName,
-      contactName: input.contactName ?? null,
-      phone: input.phone ?? null,
-      businessType: input.businessType ?? null,
-      street: input.street ?? null,
-      city: input.city ?? null,
-      zip: input.zip ?? null,
-      taxId: input.taxId ?? null,
-    };
+    const values = { userId, ...input, businessType: input.businessType ?? null };
 
     await db
       .insert(businessProfiles)
       .values(values)
       .onConflictDoUpdate({
         target: businessProfiles.userId,
-        set: {
-          businessName: values.businessName,
-          contactName: values.contactName,
-          phone: values.phone,
-          businessType: values.businessType,
-          street: values.street,
-          city: values.city,
-          zip: values.zip,
-          taxId: values.taxId,
-          updatedAt: new Date(),
-        },
+        set: { ...input, businessType: input.businessType ?? null, updatedAt: new Date() },
       });
 
     return db.query.businessProfiles.findFirst({

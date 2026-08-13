@@ -38,7 +38,7 @@ function Rail() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const profileQuery = trpc.profile.get.useQuery(undefined, { retry: false });
-  const businessName = profileQuery.data?.businessName ?? user?.name ?? 'Wholesale Customer';
+  const businessName = profileQuery.data?.company ?? user?.name ?? 'Wholesale Customer';
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">

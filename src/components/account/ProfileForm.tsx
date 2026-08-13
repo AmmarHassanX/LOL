@@ -18,16 +18,20 @@ import type { BusinessProfile } from './utils';
 
 /** Indiana ZIPs are 5 digits beginning with 46 or 47. */
 const profileSchema = z.object({
-  businessName: z.string().min(1, 'Business name is required').max(255),
-  contactName: z.string().min(1, 'Contact name is required').max(255),
+  company: z.string().min(1, 'Company name is required').max(255),
+  firstName: z.string().min(1, 'First name is required').max(255),
+  lastName: z.string().min(1, 'Last name is required').max(255),
   phone: z.string().min(7, 'Enter a valid phone number').max(40),
   businessType: z.enum(['c-store', 'gas-station', 'restaurant', 'smoke-shop', 'market', 'other']),
-  street: z.string().min(1, 'Street address is required').max(255),
+  address1: z.string().min(1, 'Street address is required').max(255),
   city: z.string().min(1, 'City is required').max(100),
+  state: z.string().min(2, 'State is required').max(2),
   zip: z
     .string()
     .regex(/^4[67]\d{3}$/, 'Indiana delivery only — ZIP must start with 46 or 47'),
-  taxId: z.string().min(1, 'Tax / resale ID is required').max(64),
+  taxId: z.string().min(1, 'Tax ID is required').max(64),
+  feinNumber: z.string().min(1, 'FEIN number is required').max(64),
+  tobaccoId: z.string().min(1, 'Tobacco license number is required').max(64),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -67,14 +71,18 @@ export default function ProfileForm({
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      businessName: profile?.businessName ?? '',
-      contactName: profile?.contactName ?? '',
+      company: profile?.company ?? '',
+      firstName: profile?.firstName ?? '',
+      lastName: profile?.lastName ?? '',
       phone: profile?.phone ?? '',
       businessType: profile?.businessType ?? undefined,
-      street: profile?.street ?? '',
+      address1: profile?.address1 ?? '',
       city: profile?.city ?? '',
+      state: profile?.state ?? '',
       zip: profile?.zip ?? '',
       taxId: profile?.taxId ?? '',
+      feinNumber: profile?.feinNumber ?? '',
+      tobaccoId: profile?.tobaccoId ?? '',
     },
   });
 
@@ -82,14 +90,18 @@ export default function ProfileForm({
   useEffect(() => {
     if (!profile) return;
     reset({
-      businessName: profile.businessName ?? '',
-      contactName: profile.contactName ?? '',
+      company: profile.company ?? '',
+      firstName: profile.firstName ?? '',
+      lastName: profile.lastName ?? '',
       phone: profile.phone ?? '',
       businessType: profile.businessType ?? undefined,
-      street: profile.street ?? '',
+      address1: profile.address1 ?? '',
       city: profile.city ?? '',
+      state: profile.state ?? '',
       zip: profile.zip ?? '',
       taxId: profile.taxId ?? '',
+      feinNumber: profile.feinNumber ?? '',
+      tobaccoId: profile.tobaccoId ?? '',
     });
   }, [profile, reset]);
 
@@ -97,28 +109,30 @@ export default function ProfileForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <Label htmlFor="pf-business" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
-            Business Name
+          <Label htmlFor="pf-company" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            Company Name
           </Label>
           <Input
-            id="pf-business"
+            id="pf-company"
             placeholder="Hoosier Corner Market LLC"
             className={inputClass}
-            {...register('businessName')}
+            {...register('company')}
           />
-          <FieldError message={errors.businessName?.message} />
+          <FieldError message={errors.company?.message} />
         </div>
         <div>
-          <Label htmlFor="pf-contact" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
-            Contact Name
+          <Label htmlFor="pf-first" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            First Name
           </Label>
-          <Input
-            id="pf-contact"
-            placeholder="Sam Hoosier"
-            className={inputClass}
-            {...register('contactName')}
-          />
-          <FieldError message={errors.contactName?.message} />
+          <Input id="pf-first" placeholder="Sam" className={inputClass} {...register('firstName')} />
+          <FieldError message={errors.firstName?.message} />
+        </div>
+        <div>
+          <Label htmlFor="pf-last" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            Last Name
+          </Label>
+          <Input id="pf-last" placeholder="Hoosier" className={inputClass} {...register('lastName')} />
+          <FieldError message={errors.lastName?.message} />
         </div>
         <div>
           <Label htmlFor="pf-phone" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
@@ -158,16 +172,16 @@ export default function ProfileForm({
           <FieldError message={errors.businessType?.message} />
         </div>
         <div className="sm:col-span-2">
-          <Label htmlFor="pf-street" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+          <Label htmlFor="pf-address1" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
             Street Address
           </Label>
           <Input
-            id="pf-street"
+            id="pf-address1"
             placeholder="1234 W Main St"
             className={inputClass}
-            {...register('street')}
+            {...register('address1')}
           />
-          <FieldError message={errors.street?.message} />
+          <FieldError message={errors.address1?.message} />
         </div>
         <div>
           <Label htmlFor="pf-city" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
@@ -175,6 +189,13 @@ export default function ProfileForm({
           </Label>
           <Input id="pf-city" placeholder="Indianapolis" className={inputClass} {...register('city')} />
           <FieldError message={errors.city?.message} />
+        </div>
+        <div>
+          <Label htmlFor="pf-state" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            State
+          </Label>
+          <Input id="pf-state" placeholder="IN" maxLength={2} className={inputClass} {...register('state')} />
+          <FieldError message={errors.state?.message} />
         </div>
         <div>
           <Label htmlFor="pf-zip" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
@@ -190,17 +211,26 @@ export default function ProfileForm({
           />
           <FieldError message={errors.zip?.message} />
         </div>
-        <div className="sm:col-span-2">
+        <div>
           <Label htmlFor="pf-tax" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
-            Tax / Resale ID
+            Tax ID
           </Label>
-          <Input
-            id="pf-tax"
-            placeholder="IN RRMC-000000"
-            className={inputClass}
-            {...register('taxId')}
-          />
+          <Input id="pf-tax" placeholder="IN RRMC-000000" className={inputClass} {...register('taxId')} />
           <FieldError message={errors.taxId?.message} />
+        </div>
+        <div>
+          <Label htmlFor="pf-fein" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            FEIN Number
+          </Label>
+          <Input id="pf-fein" className={inputClass} {...register('feinNumber')} />
+          <FieldError message={errors.feinNumber?.message} />
+        </div>
+        <div className="sm:col-span-2">
+          <Label htmlFor="pf-tobacco" className="font-mono text-[11px] tracking-[0.14em] text-stone uppercase">
+            Tobacco License Number
+          </Label>
+          <Input id="pf-tobacco" className={inputClass} {...register('tobaccoId')} />
+          <FieldError message={errors.tobaccoId?.message} />
         </div>
       </div>
 

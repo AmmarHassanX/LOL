@@ -398,7 +398,7 @@ function BusinessProfileSection() {
               </span>
               <div>
                 <h2 className="font-display text-lg font-semibold text-ink">
-                  {profile.businessName}
+                  {profile.company}
                 </h2>
                 <p className="font-mono text-[11px] tracking-wider text-stone">
                   {(BUSINESS_TYPE_LABEL[profile.businessType ?? ''] ?? 'BUSINESS').toUpperCase()}
@@ -418,12 +418,12 @@ function BusinessProfileSection() {
           </div>
           <dl className="grid gap-x-8 gap-y-4 px-6 py-5 sm:grid-cols-2">
             {[
-              ['CONTACT', profile.contactName ?? '—'],
+              ['CONTACT', `${profile.firstName} ${profile.lastName}`.trim() || '—'],
               ['PHONE', profile.phone ?? '—'],
               [
                 'DELIVERY ADDRESS',
-                profile.street
-                  ? `${profile.street}, ${profile.city ?? ''}, IN ${profile.zip ?? ''}`
+                profile.address1
+                  ? `${profile.address1}, ${profile.city ?? ''}, ${profile.state ?? 'IN'} ${profile.zip ?? ''}`
                   : '—',
               ],
               ['TAX / RESALE ID', profile.taxId ?? '—'],
@@ -448,9 +448,9 @@ function Dashboard() {
   const profileQuery = trpc.profile.get.useQuery();
 
   const orders = useMemo(() => ordersQuery.data ?? [], [ordersQuery.data]);
-  const firstName = (profileQuery.data?.contactName ?? user?.name ?? 'there').split(' ')[0];
-  const businessLine = profileQuery.data?.businessName
-    ? ` · ${profileQuery.data.businessName.toUpperCase()}`
+  const firstName = profileQuery.data?.firstName ?? user?.name?.split(' ')[0] ?? 'there';
+  const businessLine = profileQuery.data?.company
+    ? ` · ${profileQuery.data.company.toUpperCase()}`
     : '';
 
   return (

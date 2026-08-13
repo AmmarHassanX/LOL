@@ -15,6 +15,8 @@ import {
 // Postgres has no UNSIGNED integers (a MySQL-only concept) — the `unsigned`
 // option is simply dropped below, not replaced with anything.
 
+export type AccountStatus = "pending" | "approved" | "rejected";
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
@@ -24,6 +26,14 @@ export const users = pgTable("users", {
    *  added after the original Kimi-platform OAuth login was removed —
    *  real wholesale customers have no reason to have a Kimi account. */
   passwordHash: varchar("passwordHash", { length: 255 }),
+  /** New accounts start "pending" and can't log in until a staff member
+   *  reviews their business/license info and approves them — this is a
+   *  licensed tobacco/vape distributor, not a general storefront. */
+  accountStatus: varchar("accountStatus", { length: 10 })
+    .$type<AccountStatus>()
+    .notNull()
+    .default("pending"),
+  accountStatusNote: text("accountStatusNote"),
   avatar: text("avatar"),
   role: varchar("role", { length: 10 }).$type<"user" | "admin">().default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -159,14 +169,45 @@ export const businessProfiles = pgTable("business_profiles", {
   userId: bigint("user_id", { mode: "number" })
     .notNull()
     .unique(),
-  businessName: varchar("businessName", { length: 255 }).notNull(),
-  contactName: varchar("contactName", { length: 255 }),
-  phone: varchar("phone", { length: 40 }),
+
+  // ── Owner/manager (required) ──
+  firstName: varchar("firstName", { length: 255 }).notNull(),
+  lastName: varchar("lastName", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 40 }).notNull(),
+
+  // ── Company (required) ──
+  /** Legal company name, as shown on the tax ID / license documents. */
+  company: varchar("company", { length: 255 }).notNull(),
+  dbaName: varchar("dbaName", { length: 255 }),
   businessType: varchar("businessType", { length: 20 }).$type<BusinessType>(),
-  street: varchar("street", { length: 255 }),
-  city: varchar("city", { length: 100 }),
-  zip: varchar("zip", { length: 10 }),
-  taxId: varchar("taxId", { length: 64 }),
+
+  // ── Address (required) ──
+  address1: varchar("address1", { length: 255 }).notNull(),
+  address2: varchar("address2", { length: 255 }),
+  city: varchar("city", { length: 100 }).notNull(),
+  state: varchar("state", { length: 2 }).notNull(),
+  zip: varchar("zip", { length: 10 }).notNull(),
+  county: varchar("county", { length: 100 }),
+  country: varchar("country", { length: 2 }).notNull().default("US"),
+
+  // ── Tax / license IDs — taxId, feinNumber, and tobaccoId are required;
+  //    the rest are optional, matching SalesAgent's own application form
+  //    (a store might not carry vapor or hemp products, for instance). ──
+  taxId: varchar("taxId", { length: 64 }).notNull(),
+  feinNumber: varchar("feinNumber", { length: 64 }).notNull(),
+  tobaccoId: varchar("tobaccoId", { length: 64 }).notNull(),
+  tobaccoLicenseExpiration: timestamp("tobaccoLicenseExpiration"),
+  cigaretteId: varchar("cigaretteId", { length: 64 }),
+  cigaretteLicenseExpiration: timestamp("cigaretteLicenseExpiration"),
+  vaporTaxId: varchar("vaporTaxId", { length: 64 }),
+  vaporTaxExpiration: timestamp("vaporTaxExpiration"),
+  salesTaxId: varchar("salesTaxId", { length: 64 }),
+  salesTaxExpiration: timestamp("salesTaxExpiration"),
+  hempLicenseNumber: varchar("hempLicenseNumber", { length: 64 }),
+  hempLicenseExpiration: timestamp("hempLicenseExpiration"),
+  drivingLicenseNumber: varchar("drivingLicenseNumber", { length: 64 }),
+  bankName: varchar("bankName", { length: 255 }),
+
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
